@@ -48,7 +48,6 @@ uniform sampler2D diffuse; // the vertical colour gradient
 uniform float time; // Used for texture animation
 
 uniform vec3 frequency;
-uniform float hueAdjust;
 
 varying vec3 v_texCoord3D;
 
@@ -198,49 +197,12 @@ float fbm(vec3 position, int octaves, float frequency, float persistence) {
 	return total / maxAmplitude;
 }
 
-// HueAdjustment function based on this StackOverflow answer
-// http://stackoverflow.com/questions/9234724/how-to-change-hue-of-a-texture-with-glsl/9234854#9234854
-vec4 HueShift(in vec4 color)
-{
-    const vec4  kRGBToYPrime= vec4 (0.299, 0.587, 0.114, 0.0);
-    const vec4  kRGBToI     = vec4 (0.596, -0.275, -0.321, 0.0);
-    const vec4  kRGBToQ     = vec4 (0.212, -0.523, 0.311, 0.0);
-
-    const vec4  kYIQToR   = vec4 (1.0, 0.956, 0.621, 0.0);
-    const vec4  kYIQToG   = vec4 (1.0, -0.272, -0.647, 0.0);
-    const vec4  kYIQToB   = vec4 (1.0, -1.107, 1.704, 0.0);
-
-    // Convert to YIQ
-    float   YPrime = dot (color, kRGBToYPrime);
-    float   I      = dot (color, kRGBToI);
-    float   Q      = dot (color, kRGBToQ);
-
-    // Calculate the hue and chroma
-    float   hue     = atan (Q, I);
-    float   chroma  = sqrt (I * I + Q * Q);
-
-    // Make the user's adjustments
-    hue += hueAdjust;
-
-    // Convert back to YIQ
-    Q = chroma * sin (hue);
-    I = chroma * cos (hue);
-
-    // Convert back to RGB
-    vec4    yIQ   = vec4 (YPrime, I, Q, 0.0);
-    color.r = dot (yIQ, kYIQToR);
-    color.g = dot (yIQ, kYIQToG);
-    color.b = dot (yIQ, kYIQToB);
-
-    // the result
-    return color;
-}
-
 vec4 GetColour(in vec3 p)
 {	
-	float n1 = fbm(p * 4.0, 8, frequency.x, 0.5);
-	float n2 = fbm(p * 3.14159, 8, frequency.z, 0.5);
-	vec4 color = vec4(texture2D(diffuse, vec2(0.0, (p.y + 1.0) * 0.5) + vec2(n1*0.075,n2*0.075)).xyz, 1.0);
+	//float n1 = fbm(p * 4.0, 8, frequency.x, 0.5);
+	//float n2 = fbm(p * 3.14159, 8, frequency.z, 0.5);
+	//vec4 color = vec4(texture2D(diffuse, vec2(0.0, (p.y + 1.0) * 0.5) + vec2(n1*0.075,n2*0.075)).xyz, 1.0);
+	vec4 color = vec4(texture2D(diffuse, vec2(0.0, (p.y + 1.0) * 0.5)).xyz, 1.0);
 	return color;
 }
 
@@ -250,5 +212,5 @@ void main(void)
 	vec4 colour = GetColour(v_texCoord3D);
 	
 	// Hue Shift the colour and store the final result
-	gl_FragColor = HueShift(colour);
+	gl_FragColor = colour;
 }

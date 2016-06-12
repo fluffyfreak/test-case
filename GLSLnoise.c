@@ -102,7 +102,6 @@ GLint location_gradTexture = -1;
 GLint location_diffTexture = -1; 
 GLint location_time = -1;
 GLint location_frequency = -1;
-GLint location_hueAdjust = -1;
 
 const char *vertexShaderStrings[1];
 const char *fragmentShaderStrings[1];
@@ -313,7 +312,6 @@ void createShaders() {
     */
 	location_diffTexture = glGetUniformLocation( programObj, "diffuse" );
 	location_frequency = glGetUniformLocation( programObj, "frequency" );
-	location_hueAdjust = glGetUniformLocation( programObj, "hueAdjust" );
     // This is not used for the 2D noise demo.
     location_time = glGetUniformLocation( programObj, "time" );
     /*
@@ -522,24 +520,23 @@ void initGradTexture(GLuint *texID)
 }
 
 /*
- * initPermTexture(GLuint *texID) - create and load a 2D texture for
+ * initDiffTexture(GLuint *texID) - create and load a 2D texture for
  * a combined index permutation and gradient lookup table.
  * This texture is used for 2D and 3D noise, both classic and simplex.
  */
 void initDiffTexture(GLuint *texID)
 {
-  char *pixels;
-  int i,j;
-
-  glActiveTexture( GL_TEXTURE2 ); // Activate a different texture unit (unit 1)
+  glActiveTexture( GL_TEXTURE2 ); // Activate a different texture unit (unit 2)
   
   glGenTextures(1, texID); // Generate a unique texture ID
-  glBindTexture(GL_TEXTURE_2D, *texID); // Bind the texture to texture unit 0
+  glBindTexture(GL_TEXTURE_2D, *texID); // Bind the texture to texture unit 2
   
-  // GLFW texture loading functions won't work here - we need GL_NEAREST lookup.
-  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, 1, 1024, 0, GL_RGBA, GL_UNSIGNED_BYTE, MagickImage );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+  const size_t size = (sizeof(MagickImage)-13);
+  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 256/*size/3*/, 0, GL_RGB, GL_UNSIGNED_BYTE, MagickImage+13 );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+  glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
   glActiveTexture( GL_TEXTURE0 ); // Switch active texture unit back to 0 again
 }
@@ -596,8 +593,6 @@ void renderScene( void )
 	  
 	  if( location_frequency != -1 )
   		glUniform3f( location_frequency, 0.5, 1.0, 2.0 ); // Texture unit 1
-	  if( location_hueAdjust != -1 )
-  		glUniform1f( location_hueAdjust, 1.0 ); // Texture unit 1
 		
  		// Render with the shaders active.
 	  drawScene(t);
