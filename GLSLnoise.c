@@ -531,8 +531,7 @@ void initDiffTexture(GLuint *texID)
   glGenTextures(1, texID); // Generate a unique texture ID
   glBindTexture(GL_TEXTURE_2D, *texID); // Bind the texture to texture unit 2
   
-  const size_t size = (sizeof(MagickImage)-13);
-  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 256/*size/3*/, 0, GL_RGB, GL_UNSIGNED_BYTE, MagickImage+13 );
+  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 256, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, MagickImage+12 );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
   glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
