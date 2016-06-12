@@ -16,3 +16,7 @@ To build:
 To run:
 
 	./GLSLnoise
+	
+Expected output:
+
+![Jupiter-ish](/output.png?raw=true "Jupiter-ish")
