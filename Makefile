@@ -1,6 +1,6 @@
-#Makefile for Windows mingw32, Linux and MacOSX (gcc environments)
 
-gcc -I. -I/usr/include GLSLnoise.c -lglfw -lGLU -lGL -lm -o GLSLnoise
+linux:
+	gcc -I. -I/usr/include GLSLnoise.c -lglfw -lGLU -lGL -lm -o GLSLnoise
 
 clean:
 	rm -f GLSLnoise.o

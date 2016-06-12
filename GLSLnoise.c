@@ -60,7 +60,9 @@ THE SOFTWARE.
 #include "out_rgb.h"
 
 /* Global variables for all the nice stuff we need above OpenGL 1.1 */
+#ifdef WIN32
 PFNGLACTIVETEXTUREPROC           glActiveTexture      = NULL;
+#endif
 PFNGLCREATEPROGRAMPROC           glCreateProgram      = NULL;
 PFNGLDELETEPROGRAMPROC           glDeleteProgram      = NULL;
 PFNGLUSEPROGRAMPROC              glUseProgram         = NULL;
@@ -191,7 +193,9 @@ void loadExtensions() {
     }
     else
     {
+#ifdef WIN32
         glActiveTexture           = (PFNGLACTIVETEXTUREPROC)glfwGetProcAddress("glActiveTexture");
+#endif
         glCreateProgram           = (PFNGLCREATEPROGRAMPROC)glfwGetProcAddress("glCreateProgram");
         glDeleteProgram           = (PFNGLDELETEPROGRAMPROC)glfwGetProcAddress("glDeleteProgram");
         glUseProgram              = (PFNGLUSEPROGRAMPROC)glfwGetProcAddress("glUseProgram");
