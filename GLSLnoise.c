@@ -94,6 +94,8 @@ GLuint sphereList;
 GLboolean updateTime = GL_TRUE;
 GLboolean animateObject = GL_TRUE;
 
+GLuint octaves = 8;
+
 GLhandleARB programObj;
 GLhandleARB vertexShader;
 GLhandleARB fragmentShader;
@@ -101,6 +103,7 @@ GLint location_permTexture = -1;
 GLint location_gradTexture = -1; 
 GLint location_diffTexture = -1; 
 GLint location_time = -1;
+GLint location_octavesIn = -1;
 GLint location_frequency = -1;
 
 const char *vertexShaderStrings[1];
@@ -311,6 +314,7 @@ void createShaders() {
       printError("Binding error","Failed to locate uniform variable 'gradTexture'.");
     */
 	location_diffTexture = glGetUniformLocation( programObj, "diffuse" );
+	location_octavesIn = glGetUniformLocation( programObj, "octavesIn" );
 	location_frequency = glGetUniformLocation( programObj, "frequency" );
     // This is not used for the 2D noise demo.
     location_time = glGetUniformLocation( programObj, "time" );
@@ -335,7 +339,7 @@ void showFPS() {
     if( (t-t0) > 1.0 || frames == 0 )
     {
         fps = (double)frames / (t-t0);
-        sprintf(titlestring, "GLSL Perlin noise (%.1f FPS)", fps);
+        sprintf(titlestring, "GLSL Perlin noise (%.1f FPS), %u octaves", fps, octaves);
         glfwSetWindowTitle(titlestring);
         t0 = t;
         frames = 0;
@@ -588,10 +592,13 @@ void renderScene( void )
  	  if( location_gradTexture != -1 )
   		glUniform1i( location_gradTexture, 1 ); // Texture unit 1
 	  if( location_diffTexture != -1 )
-  		glUniform1i( location_diffTexture, 2 ); // Texture unit 1
+  		glUniform1i( location_diffTexture, 2 ); // Texture unit 2
 	  
+	  
+	  if( location_octavesIn != -1 )
+  		glUniform1i( location_octavesIn, octaves ); //
 	  if( location_frequency != -1 )
-  		glUniform3f( location_frequency, 0.5, 1.0, 2.0 ); // Texture unit 1
+  		glUniform3f( location_frequency, 0.5, 1.0, 2.0 ); // 
 		
  		// Render with the shaders active.
 	  drawScene(t);
@@ -675,6 +682,23 @@ int main(int argc, char *argv[]) {
         // Decide whether to animate the rotation for the scene or not
         if(glfwGetKey('Z')) animateObject = GL_TRUE;
         if(glfwGetKey('X')) animateObject = GL_FALSE;
+		
+        // Increase / Decrease the number of octaves used in the shader fbm noise
+		static float fLastTime = 0.0f;
+		const float currTime = (float)glfwGetTime();
+		if(currTime - fLastTime > 0.5f) {
+			if(glfwGetKey('Q')) {
+				++octaves;
+				octaves = min(octaves, 32);
+				fLastTime = currTime;
+			}
+			if(glfwGetKey('E')) {
+				--octaves;
+				octaves = max(octaves, 2);
+				fLastTime = currTime;
+			}
+		}
+		
 
         // Check if the ESC key was pressed or the window was closed.
         if(glfwGetKey(GLFW_KEY_ESC) || !glfwGetWindowParam(GLFW_OPENED))

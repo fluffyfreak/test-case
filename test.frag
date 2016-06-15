@@ -47,6 +47,7 @@ uniform sampler2D gradTexture;
 uniform sampler2D diffuse; // the vertical colour gradient
 uniform float time; // Used for texture animation
 
+uniform int octavesIn;
 uniform vec3 frequency;
 
 varying vec3 v_texCoord3D;
@@ -199,15 +200,12 @@ float fbm(vec3 position, int octaves, float frequency, float persistence) {
 
 vec4 GetColour(in vec3 p)
 {	
-#if 1
-	int octaves = 7;	// broken
-#elif
-	int octaves = 6;	// distorted
-#else
-	int octaves = 5;	// working
-#endif
-	float n1 = fbm(p * 4.0, octaves, frequency.x, 0.5);
-	float n2 = fbm(p * 3.14159, octaves, frequency.z, 0.5);
+	// octaves = 7;	// broken
+	// octaves = 6;	// distorted
+	// octaves = 5;	// working
+
+	float n1 = fbm(p * 4.0, octavesIn, frequency.x, 0.5);
+	float n2 = fbm(p * 3.14159, octavesIn, frequency.z, 0.5);
 	vec4 color = vec4(texture2D(diffuse, vec2(0.0, (p.y + 1.0) * 0.5) + vec2(n1*0.075,n2*0.075)).xyz, 1.0);
 	return color;
 }
